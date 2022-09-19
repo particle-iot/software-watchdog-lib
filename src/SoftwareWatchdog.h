@@ -1,7 +1,7 @@
 #pragma once
 
 #include <chrono>
-#include "particle.h"
+#include "Particle.h"
 
 class SoftwareWatchdog
 {
@@ -31,13 +31,12 @@ public:
     // This constuctor helps to resolve overloaded function types, such as System.reset(), which is not always
     // possible in case of std::function
     SoftwareWatchdog(unsigned timeout_ms, void (*fn)(), unsigned stack_size=DEFAULT_STACK_SIZE) :
-        ApplicationWatchdogWorkaround(timeout_ms, std::function<void()>(fn), stack_size)
+        SoftwareWatchdog(timeout_ms, std::function<void()>(fn), stack_size)
     {
     }
     SoftwareWatchdog(std::chrono::milliseconds ms, void (*fn)(), unsigned stack_size=DEFAULT_STACK_SIZE) : SoftwareWatchdog(ms.count(), fn, stack_size) {}
 
 	~SoftwareWatchdog() {
- 		dispose();
  		if (thread) {
  			// NOTE: this may have to wait up to original timeout for the thread to exit
  			delete thread;
@@ -49,6 +48,6 @@ public:
 	 */
 	static void checkin()
 	{
-		last_checkin = current_time();
+		last_checkin = HAL_Timer_Get_Milli_Seconds();
 	}
 };

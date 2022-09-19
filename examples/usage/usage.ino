@@ -24,7 +24,7 @@ void setup() {
 }
 
 void loop() {
-  while (some_long_process_within_loop) {
+  while (true) {
     SoftwareWatchdog::checkin(); // resets the AWDT count
   }
 }

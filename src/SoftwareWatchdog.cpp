@@ -5,24 +5,23 @@ volatile system_tick_t SoftwareWatchdog::last_checkin = 0;
 os_thread_return_t SoftwareWatchdog::start(void* pointer)
 {
 	SoftwareWatchdog& wd = *(SoftwareWatchdog*)pointer;
+
+    //when we start, trigger an initial checkin pulse
+    last_checkin = HAL_Timer_Get_Milli_Seconds();
+
 	wd.loop();
 	os_thread_cleanup(nullptr);
 }
 
 void SoftwareWatchdog::loop()
  {
-    auto wakeupTimestamp = last_checkin + timeout;
- 	auto now = HAL_Timer_Get_Milli_Seconds();
-
- 	if (wakeupTimestamp > now) {
- 		HAL_Delay_Milliseconds(wakeupTimestamp - now);
- 	}
-
- 	while (true) {
-        if ((now-last_checkin)>=timeout) {
+    while (true) {
+        auto now = HAL_Timer_Get_Milli_Seconds();
+        auto timeSinceLastCheckin = (now-last_checkin);
+        if (timeSinceLastCheckin >= timeout) {
  			break;
  		}
- 		HAL_Delay_Milliseconds(timeout);
+ 		HAL_Delay_Milliseconds(timeout - timeSinceLastCheckin);
     }
 
  	if (timeout>0 && timeout_fn) {

@@ -18,7 +18,7 @@ void SoftwareWatchdog::loop()
     while (true) {
         auto now = HAL_Timer_Get_Milli_Seconds();
         auto timeSinceLastCheckin = (now-last_checkin);
-        if (timeSinceLastCheckin >= timeout) {
+        if (last_checkin != 0 && timeSinceLastCheckin >= timeout) {
  			break;
  		}
  		HAL_Delay_Milliseconds(timeout - timeSinceLastCheckin);

@@ -50,5 +50,19 @@ public:
 	{
 		last_checkin = HAL_Timer_Get_Milli_Seconds();
 	}
+
+	/**
+	 * @brief Call this before sleep
+	 * 
+	 * This eliminates the coupling of the watchdog timeout and the sleep duration. The problem
+	 * is that without this, when the device wakes from STOP or ULP sleep modes, the millis 
+	 * tick counter will be incremented, which can cause the watchdog timer to fire. Because the
+	 * watchdog timer thread is a high priority thread, it's likely to run before the user
+	 * thread can call checkin().
+	 */
+	static void stop() 
+	{
+		last_checkin = 0;
+	}
 };
   

@@ -6,6 +6,9 @@
 // Global variable to hold the watchdog object pointer
 SoftwareWatchdog *wd = nullptr;
 
+unsigned long lastSleep = 0;
+const unsigned long waitUntilSleep = 30000; // milliseconds
+
 void watchdogHandler() {
   // Do as little as possible in this function, preferably just
   // calling System.reset().
@@ -24,5 +27,20 @@ void setup() {
 }
 
 void loop() {
-  SoftwareWatchdog::checkin(); // resets the AWDT count
+    SoftwareWatchdog::checkin(); // resets the AWDT count
+
+    if (millis() - lastSleep >= waitUntilSleep) {
+        lastSleep = millis();
+
+        SystemSleepConfiguration sleepConfig;
+        sleepConfig
+            .mode(SystemSleepMode::STOP)
+            .duration(90000);
+
+        // Clear the watchdog before sleep to eliminate a race condition where the watchdog
+        // could fire before the next checkin after waking from sleep
+        SoftwareWatchdog::stop();
+
+        SystemSleepResult sleepResult = System.sleep(sleepConfig); 
+    }
 }

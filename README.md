@@ -3,7 +3,8 @@
 A Particle library for SoftwareWatchdog
 
 ## LICENSE
-Copyright 2022 Particle
+
+Apache 2.0 (Can be used in open or closed-source projects, including commercial projects)
 
 
 ## Version History
